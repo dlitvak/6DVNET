@@ -70,13 +70,13 @@ class Car3D(torch.utils.data.Dataset):
         :return:
         """
         if self.list_flag == "train":
-            train_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', self.list_flag + '.txt'))]
+            train_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', self.list_flag + '-list.txt'))]
             train_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_train_error _delete.txt'))]
             print("Train delete %d images" % len(train_list_delete))
 
             self.img_list_all = [x for x in train_list_all if x not in train_list_delete]
         elif self.list_flag == "val":
-            valid_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', 'val.txt'))]
+            valid_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', 'validation-list.txt'))]
             val_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_val_error_delete.txt'))]
             self.img_list_all = [x for x in valid_list_all if x not in val_list_delete]
             print("Val delete %d images." % len(val_list_delete))
@@ -94,14 +94,19 @@ class Car3D(torch.utils.data.Dataset):
         logging.info('loading %d car models' % len(car_models.models))
         for model in car_models.models:
             model_dir = "/".join(self.dataset_dir.split("/")[:-1])+'/train'
-            car_model = os.path.join(model_dir, 'car_models', model.name+'.pkl')
+            car_model = os.path.join(model_dir, 'car_models_json', model.name+'.json')
             # with open(car_model) as f:
             #     self.car_models[model.name] = pkl.load(f)
             #
             # This is a python 3 compatibility
-            car_models_all[model.name] = pickle.load(open(car_model, "rb"), encoding='latin1')
+            #REM pkl car_models_all[model.name] = pickle.load(open(car_model, "rb"), encoding='latin1')
             # fix the inconsistency between obj and pkl
-            car_models_all[model.name]['vertices'][:, [0, 1]] *= -1
+            #REM pkl car_models_all[model.name]['vertices'][:, [0, 1]] *= -1
+
+            car_models_all[model.name] = json.load(open(car_model, 'r'))
+            car_models_all[model.name]['vertices'] = np.asarray(car_models_all[model.name]['vertices'])
+            car_models_all[model.name]['faces'] = np.asarray(car_models_all[model.name]['faces'])
+
         return car_models_all
 
     def get_img_info(self, idx=None):
@@ -142,7 +147,7 @@ class Car3D(torch.utils.data.Dataset):
             self.transforms.transforms[0].min_size = self.cfg['INPUT']['MIN_SIZE_TEST']
             im_scale = 1.0
 
-        if self.list_flag in ['train', 'val']:
+        if self.list_flag in ['train', 'val','test']:
             target = self._add_gt_annotations_Car3d(idx, image_shape, im_scale)
 
         if self.transforms is not None:
@@ -265,7 +270,8 @@ class Car3D(torch.utils.data.Dataset):
             img = Image.open(os.path.join(self.dataset_dir, 'images', self.img_list_all[ idx ] + '.jpg')).convert("RGB")
             image_shape = img.size
             if self.list_flag in ['train', 'val']:
-                target = self._add_gt_annotations_Car3d(idx, image_shape)
+                im_scale = 1.0
+                target = self._add_gt_annotations_Car3d(idx, image_shape, im_scale)
 
             if type == 'boxes':
                 for id in range(len(target)):
