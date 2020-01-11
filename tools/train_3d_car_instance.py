@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument('--dataset', dest='dataset', default='ApolloScape', help='Dataset to use')
     parser.add_argument('--disp_interval', help='Display training info every N iterations', default=20, type=int)
     parser.add_argument('--no_cuda', dest='cuda', help='Do not use CUDA device', action='store_false')
-    parser.add_argument('--output_dir', default='/media/SSD_1TB/ApolloScape/6DVNET_experiments')
+    parser.add_argument('--output_dir', default='../train_out')
 
     # Epoch
     parser.add_argument('--start_step', help='Starting step count for training epoch. 0-indexed.', default=0, type=int)

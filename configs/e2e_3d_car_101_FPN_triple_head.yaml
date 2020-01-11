@@ -1,7 +1,7 @@
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
   #WEIGHT: "/media/SSD_1TB/ApolloScape/6DVNET_experiments/e2e_3d_car_101_FPN_triple_head/May31-05-30_n606_step/model_final.pth"
-  WEIGHT: "/media/SSD_1TB/ApolloScape/6DVNET_experiments/e2e_mask_rcnn_R_101_FPN_1x.pth"
+  WEIGHT: "../models/e2e_mask_rcnn_R_101_FPN_1x.pth"
 
   # WEIGHT: "catalog://ImageNetPretrained/MSRA/R-101"
   BACKBONE:

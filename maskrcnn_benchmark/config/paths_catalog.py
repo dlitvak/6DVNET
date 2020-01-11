@@ -8,13 +8,13 @@ class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
         "Apollo_3d_car_train": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train",
+            "dataset_dir": "/Users/dlitvak/kaggle/apolloscape/train",
         },
         "Apollo_3d_car_val": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/train",
+            "dataset_dir": "/Users/dlitvak/kaggle/apolloscape/train",
         },
         "Apollo_3d_car_test": {
-            "dataset_dir": "/media/SSD_1TB/ApolloScape/ECCV2018_apollo/test",
+            "dataset_dir": "/Users/dlitvak/kaggle/apolloscape/test",
         },
 
         "Pascal3d+_train": {"dataset_dir": "/media/SSD_1TB/PASCAL3D+_release1.1",},

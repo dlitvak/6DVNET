@@ -16,15 +16,33 @@ from maskrcnn_benchmark.utils.comm import synchronize, get_rank
 from maskrcnn_benchmark.utils.logger import setup_logger
 from maskrcnn_benchmark.utils.miscellaneous import mkdir
 
+from torch.utils.tensorboard import SummaryWriter
+from torchvision.utils import make_grid
+import numpy as np
+from matplotlib import pyplot as plt
 
 def parse_args():
     parser = argparse.ArgumentParser(description="PyTorch Object Detection Inference")
     parser.add_argument("--config-file", default="../configs/e2e_3d_car_101_FPN_triple_head.yaml", metavar="FILE", help="path to config file", type=str)
-    parser.add_argument("--weight", default="/media/SSD_1TB/ApolloScape/6DVNET_experiments/e2e_3d_car_101_FPN_triple_head/May27-05-43_n606_step/model_final.pth")
+    # parser.add_argument("--weight", default="/media/SSD_1TB/ApolloScape/6DVNET_experiments/e2e_3d_car_101_FPN_triple_head/May27-05-43_n606_step/model_final.pth")
+    parser.add_argument("--weight", default="../models/e2e_mask_rcnn_R_101_FPN_1x.pth")
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument("opts", help="Modify config options using the command-line", default=None, nargs=argparse.REMAINDER)
     return parser.parse_args()
 
+
+# helper function to show an image
+# (used in the `plot_classes_preds` function below)
+def matplotlib_imshow(img, one_channel=False):
+    if one_channel:
+        img = img.mean(dim=0)
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    if one_channel:
+        plt.imshow(npimg, cmap="Greys")
+    else:
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    plt.show()
 
 def main():
     args = parse_args()
@@ -59,7 +77,7 @@ def main():
     model.to(cfg.MODEL.DEVICE)
 
     checkpointer = DetectronCheckpointer(cfg, model, save_dir=cfg.MODEL.WEIGHT)
-    _ = checkpointer.load(cfg.MODEL.WEIGHT)
+    _ = checkpointer.load(cfg.MODEL.WEIGHT, cfg.TRAIN.IGNORE_LIST)
 
     iou_types = ("bbox",)
     if cfg.MODEL.MASK_ON:
@@ -74,7 +92,25 @@ def main():
             output_folders[idx] = output_folder
     data_loaders_val = make_data_loader(cfg, is_train=False, is_distributed=distributed)
 
+    # default `log_dir` is "runs" - we'll be more specific here
+    # tb_writer = SummaryWriter('runs/6dvnet_test_3d_1')
+
     for output_folder, dataset_name, data_loader_val in zip(output_folders, dataset_names, data_loaders_val):
+        # dataiter = iter(data_loader_val)
+        # images, bbox, labels = dataiter.next()
+
+        # create grid of images
+        # img_grid = make_grid(images.tensors)
+
+        # show images
+        # matplotlib_imshow(img_grid, one_channel=False)
+
+        # write to tensorboard
+        # tb_writer.add_image('6dvnet_test_3d_1', img_grid)
+        #
+        # tb_writer.add_graph(model, images.tensors)
+        # tb_writer.close()
+
         inference(
             model,
             data_loader_val,
