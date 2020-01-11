@@ -140,11 +140,12 @@ class ApolloScape(object):
         """
         ROOT = self._data_dir + '3d_car_instance/' if self._args is None else \
             self._args.data_dir
+        ROOT += '' if ROOT.endswith('/') else '/'
 
         self._data_config['image_dir'] = ROOT + 'images/'
         self._data_config['pose_dir'] = ROOT + 'car_poses/'
-        self._data_config['train_list'] = ROOT + 'split/train.txt'
-        self._data_config['val_list'] = ROOT + 'split/val.txt'
+        self._data_config['train_list'] = ROOT + 'split/train-list.txt'
+        self._data_config['val_list'] = ROOT + 'split/validation-list.txt'
         self._data_config['image_size'] = [2710, 3384]
         self._data_config['intrinsic'] = {
             'Camera_5': np.array(
