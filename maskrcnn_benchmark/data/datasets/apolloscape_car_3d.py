@@ -71,7 +71,7 @@ class Car3D(torch.utils.data.Dataset):
         """
         if self.list_flag == "train":
             train_list_all = [line.rstrip('\n')[:-4] for line in open(os.path.join(self.dataset_dir, 'split', self.list_flag + '-list.txt'))]
-            train_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_train_error _delete.txt'))]
+            train_list_delete = [line.rstrip('\n') for line in open(os.path.join(self.dataset_dir, 'split', 'Mesh_overlay_train_error_delete.txt'))]
             print("Train delete %d images" % len(train_list_delete))
 
             self.img_list_all = [x for x in train_list_all if x not in train_list_delete]
